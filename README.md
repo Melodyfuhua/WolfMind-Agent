@@ -1,357 +1,187 @@
-# WolfMind：多Agent狼人杀
+# WolfMind-Agent：支持真人参与的多智能体狼人杀
 
-<div align="center">
+基于 AgentScope 的 9 人狼人杀系统，支持 **9 个 AI 自动博弈** 与 **8 个 AI + 1 位真人同场对战**。通过 Web 界面观察发言、投票和角色行动，也可以亲自加入对局，用文字或语音转写参与讨论。
 
-基于 LLM + AgentScope 的 9 人狼人杀AI游戏
+> 本项目由 [Melodyfuhua](https://github.com/Melodyfuhua) 基于原作者 [KeLuoJun](https://github.com/KeLuoJun) 的 [WolfMind](https://github.com/KeLuoJun/WolfMind) 二次开发。原项目提供了多智能体狼人杀引擎、角色逻辑、日志与分析等基础能力；本仓库在此基础上扩展真人参与、真人视角过滤及交互体验。感谢原作者的开源工作，原始版权声明保留在 [LICENSE](LICENSE) 中。
 
-![前端界面预览](./static/frontend.png)
+## 本版本的功能扩展
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![AgentScope](https://img.shields.io/badge/AgentScope-0.1.0+-green.svg)](https://github.com/modelscope/agentscope)
-[![Vue3](https://img.shields.io/badge/Vue-3-4FC08D.svg)](https://vuejs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571.svg)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+### 真人与 AI 同场博弈
 
-[功能特性](#功能特性) • [快速开始](#快速开始) • [项目结构](#项目结构) • [对局日志与分析](#对局日志与分析) • [游戏规则](#游戏规则) 
+- 新增 `HumanAgent`，通过统一的 Agent 调用与消息接口替换一个 AI 座位，复用现有游戏流程。
+- 真人随机分配座位与角色，支持发言、投票以及对应角色的技能选择。
+- 根据决策 Schema 生成输入项，通过 WebSocket 提交行动。
+- 游戏运行在独立线程事件循环中，使用 `asyncio.Future` 等待真人输入，并通过 `call_soon_threadsafe` 跨线程唤醒。
 
-</div>
+### 真人视角与私密信息过滤
 
----
+- 在服务端按真人座位和角色过滤引擎事件，再传入前端事件流。
+- 隐藏其他玩家身份；真人为狼人时，可以识别狼人队友并查看狼人频道。
+- 预言家查验、女巫用药等夜间私密行动按角色控制可见性。
+- 剥离其他玩家的私密心声与反思，过滤后的引擎事件同时用于实时展示与历史缓冲。
 
-## 简介
+### 文字、语音与氛围交互
 
-这是一个基于大语言模型（LLM）和多智能体框架 AgentScope 构建的狼人杀游戏系统。9 个 AI 智能体将扮演不同角色（狼人、村民、预言家、女巫、猎人），通过自然语言进行推理、讨论、投票，展现出复杂的策略博弈和社交推理能力，并提供 Web 控制台用于启动/停止游戏与实时查看对局日志。
+- 真人输入面板支持文字发言和行动选择。
+- 集成浏览器 Web Speech API，将语音转写成文字后提交；可用性取决于浏览器与麦克风权限。
+- 支持昼夜背景音、事件音效和静音控制；音频文件不可用时使用 Web Audio 合成音作为回退。
 
-### 核心亮点
+## 系统已有能力
 
-- 🤖 **智能 AI 玩家**：基于 LLM 的智能体，具备推理、欺骗、协作能力
-- 🎭 **完整角色系统**：支持狼人、村民、预言家、女巫、猎人等经典角色
-- 📝 **详细游戏日志**：自动记录每局游戏的完整过程，便于分析和回放
-- 🔄 **玩家经验**：实时更新并保存玩家的游戏经验
-- 🌐 **多模型支持**：兼容 DashScope（通义千问）、OpenAI等多种 LLM
-- ⚡ **异步并行+节流**：投票、回合反思环节使用 asyncio 并行调用，并通过小幅延迟平滑请求，降低模型端瞬时压力
+以下能力在原项目基础上保留并集成：
 
-## 功能特性
+- **完整对局流程**：3 狼人、3 村民、1 预言家、1 女巫、1 猎人；包含夜间行动、白天讨论、投票、平票 PK、遗言与胜负判定。
+- **结构化决策**：通过 Pydantic Schema 与 AgentScope 的结构化输出机制，获取心声 `thought`、表现 `behavior`、发言 `speech` 及行动字段。三个字段属于一次决策输出，不是三次独立推理调用。
+- **分组通信**：利用 MsgHub 组织公共讨论与狼人私聊，手动广播经过私密字段过滤的消息。
+- **回合反思**：更新玩家之间的文字印象与策略经验，并注入后续回合上下文。
+- **经验存档**：将经验持久化为 JSON。当前默认每次开局创建空存档，尚未自动恢复上一局经验。
+- **实时观战**：FastAPI + WebSocket 推送游戏事件，Vue3 展示玩家状态、讨论和投票过程。
+- **日志分析**：保存对局日志，支持通过独立分析流程生成心理与社交关系 HTML 报告。
+- **多模型接入**：支持 DashScope、OpenAI 兼容接口与 Ollama；OpenAI 模式支持按玩家分别配置模型。
 
-### 已实现功能 ✅
+## 界面展示
 
-- ✅ 完整的狼人杀游戏流程（夜晚/白天阶段）
-- ✅ 9 个角色的独立行为逻辑
-- ✅ 智能体之间的自然语言交互
-- ✅ 游戏状态管理和胜负判定
-- ✅ 详细的游戏日志记录系统
-- ✅ 玩家经验更新与保存
-- ✅ 多 LLM 提供商支持
-- ✅ 智能体的类人化心理与社交行为（推理、欺骗、协作）
-- ✅ 智能体三段式决策：心声（内心独白） → 表现（类人化行为表现） → 发言（自然语言表达）
-- ✅ 玩家画像和对手建模
-- ✅ AI 智能体自主学习和策略优化
-- ✅ 经验和策略知识库
-- ✅ Web 控制台：日志列表/查看、自动刷新、启动/停止游戏
-- ✅ 基于日志的深度数据分析（心理分析、社交网络分析）
+本版本实机截图待补充：
 
-## 快速开始
+- **AI 对局观战**：展示玩家座位、公开发言、昼夜状态与事件记录。
+- **真人参与对局**：展示真人角色、私密提示、发言面板和行动选择。
 
-### 环境要求
+截图将放在 `docs/screenshots/`，完成后在此处添加展示。
 
-- Node.js >= 18.0.0
-- Python 3.8+
-- [uv](https://github.com/astral-sh/uv)（Python 包管理器）
+## 技术架构
 
-### 1) 安装
+```mermaid
+flowchart TD
+    UI[Vue3 界面 / 真人输入 / 语音转写] <-->|WebSocket| API[FastAPI / EventBus]
+    API --> Service[对局服务 / 独立线程事件循环]
+    Service --> Engine[游戏引擎 / 角色规则 / 胜负结算]
+    Engine --> AI[ReActAgent / 模型决策]
+    Engine --> Human[HumanAgent / Future 等待输入]
+    API -->|提交真人行动| Human
+    Engine --> Logger[GameLogger]
+    Logger --> Filter[真人模式：视角过滤]
+    Filter --> API
+    Logger --> Logs[对局日志]
+    Engine --> Memory[回合印象 / 经验 JSON]
+    Logs --> Analysis[离线分析 / HTML 报告]
+```
+
+引擎负责确定的规则和状态转换，Agent 负责在合法行动范围内生成决策。Agent 间的信息分发与浏览器事件推送分别处理。
+
+## 本地运行
+
+### 环境
+
+- Python **3.13+**，以 `pyproject.toml` 为准。
+- Node.js **22.12+** 与 npm，适配当前前端 Vite 依赖。
+- [uv](https://docs.astral.sh/uv/)。
+- 一个可用的模型服务及相应配置。
+
+### 1. 获取代码并安装依赖
 
 ```bash
-git clone https://github.com/KeLuoJun/WolfMind.git
-cd WolfMind
-
-# 一键安装前后端依赖
+git clone https://github.com/Melodyfuhua/WolfMind-Agent.git
+cd WolfMind-Agent
 npm run setup:all
-
-# 或分别安装
-npm run setup          # 安装前端依赖
-npm run setup:backend  # 安装后端依赖
 ```
 
-### 2) 配置
+### 2. 配置模型
 
-```bash
-# Windows
-copy .env.example .env
-# Linux / macOS
-cp .env.example .env
+将根目录 `.env.example` 复制为 `.env`，填写模型信息。Windows PowerShell：
+
+```powershell
+Copy-Item .env.example .env
 ```
 
-编辑 `.env`，至少配置 `MODEL_PROVIDER` 与对应的 API Key。
+例如使用 OpenAI 兼容接口：
 
-### 3) 运行
+```dotenv
+MODEL_PROVIDER=openai
+OPENAI_PLAYER_MODE=single
+OPENAI_API_KEY=your_api_key
+OPENAI_BASE_URL=https://your-provider.example/v1
+OPENAI_MODEL_NAME=your_model_name
+```
+
+也可以选择 `MODEL_PROVIDER=dashscope` 或 `MODEL_PROVIDER=ollama`，配置项见 `.env.example`。模型服务需要兼容项目使用的工具调用与结构化输出机制。
+
+`.env` 已加入 Git 忽略规则，请勿将真实密钥写入源码或提交到仓库。
+
+### 3. 启动前后端
 
 ```bash
-# 一键启动前后端开发服务器
 npm run dev
-
-# 或分别启动
-npm run backend   # 启动后端 (http://localhost:8000)
-npm run frontend  # 启动前端 (http://localhost:5173)
-```
-
-### Docker 启动
-
-```bash
-# 1. 配置环境变量（同源码部署）
-cp .env.example .env
-
-# 2. 拉取镜像并启动
-docker compose up -d
 ```
 
 - 前端：http://localhost:5173
-- 后端：http://localhost:8000
+- 后端健康检查：http://localhost:8000/health
+- API 文档：http://localhost:8000/docs
 
-### 4) 构建前端
+也可以在两个终端分别运行：
 
 ```bash
-npm run build  # 构建前端生产版本
+npm run backend
+npm run frontend
 ```
 
-### 仅运行后端（CLI / 无前端）
+进入页面后选择 AI 对局或真人参与模式。启动页面不会自动开始对局；开始对局后会调用所配置的模型服务。
+
+### 4. 构建前端
+
+```bash
+npm run build
+```
+
+### 5. 命令行对局与分析
+
+仅运行 AI 对局：
 
 ```bash
 uv run python backend/main.py
 ```
-运行后，在 data/game_logs 中查看实时的游戏信息。
 
----
-
-## 配置
-
-### 基础配置（必填）
+CLI 对局在启用 `AUTO_ANALYZE=true` 时，可在结束后自动生成分析报告。Web 启动流程当前没有接入自动报告生成；已有日志可以手动分析：
 
 ```bash
-# dashscope / openai / ollama
-MODEL_PROVIDER=dashscope
+uv run python -m backend.analysis --log data/game_logs/game_xxxx.log --experience data/experiences/players_experience_xxxx.json
 ```
 
-- **DashScope**：设置 `DASHSCOPE_API_KEY`
-- **OpenAI 兼容**：设置 `OPENAI_API_KEY`、`OPENAI_BASE_URL`、`OPENAI_MODEL_NAME`
-- **Ollama**：确保本地已安装 Ollama 并拉取模型（通常不需要 API Key）
+分析流程需要调用模型，默认输出到 `data/analysis_reports/`。
 
-#### 可选项
+## 关键代码
 
-```bash
-# 可选：启用 AgentScope Studio 可视化
-ENABLE_STUDIO=false
+| 文件 | 作用 |
+| --- | --- |
+| `backend/main.py` | 模型与 Agent 创建、CLI 入口 |
+| `backend/core/game_engine.py` | 对局调度、广播、投票与反思 |
+| `backend/models/roles.py` | 各角色行为与技能状态 |
+| `backend/models/schemas.py` | 结构化决策与候选目标约束 |
+| `backend/core/human_agent.py` | 真人代理、输入规格、异步等待与唤醒 |
+| `backend/core/perspective.py` | 真人视角事件过滤 |
+| `backend/game_service.py` | AI / 真人对局创建与组装 |
+| `backend/api_server.py` | HTTP 接口、线程管理、事件总线与 WebSocket |
+| `backend/core/knowledge_base.py` | 策略经验存档 |
+| `backend/analysis/` | 日志解析与报告生成 |
+| `frontend/src/components/HumanInputPanel.vue` | 真人行动面板与语音转写 |
+| `frontend/src/services/audio.js` | 背景音与事件音效 |
 
-# 可选：游戏结束后自动生成分析报告
-AUTO_ANALYZE=false
-```
+## 当前范围与后续方向
 
-#### OpenAI 玩家级配置（可选）
+当前版本面向本地演示和多智能体实验，同一服务运行一局游戏，真人模式支持一位玩家。视角过滤已覆盖主要引擎事件，但尚未实现完整的连接鉴权、座位绑定、所有读取接口的统一权限及多房间隔离。
 
-`OPENAI_PLAYER_MODE=single|per-player`
+后续可以继续完善：
 
-- `single`（默认）：9 位玩家共用全局 OpenAI 配置
-- `per-player`：需要同时填写 `OPENAI_API_KEY_P1..P9`、`OPENAI_BASE_URL_P1..P9`、`OPENAI_MODEL_NAME_P1..P9`
+- 真人输入的服务端校验、超时处理与断线恢复。
+- 实时事件、历史回放、日志导出与画像接口的统一可见性控制。
+- 按对局隔离历史事件，增加事件序号和重连补发。
+- 跨局经验恢复、经验质量评估与错误记忆纠正。
+- Token、延迟、对局完成率及有无反思机制的对照评估。
 
-## 项目结构
+## 致谢与许可证
 
-```
-WolfMind/
-├── .env.example              # 环境变量模板
-├── backend/                  # 后端核心
-│   ├── main.py               # 入口：启动一局完整对局
-│   ├── config.py             # 配置加载/校验/脱敏打印
-│   ├── core/                 # 核心引擎与日志/记忆
-│   │   ├── game_engine.py
-│   │   ├── game_logger.py
-│   │   ├── knowledge_base.py
-│   │   └── utils.py
-│   ├── models/               # 角色与 Pydantic 结构
-│   │   ├── roles.py
-│   │   └── schemas.py
-│   ├── prompts/              # 主持人与角色提示词
-│   │   ├── game_prompts.py
-│   │   └── role_prompts.py
-│   ├── analysis/             # 日志解析与分析Pipeline
-│   │   ├── __main__.py
-│   │   ├── pipeline.py
-│   │   ├── agents.py
-│   │   └── log_parser.py
-│   └── requirements.txt
-├── data/                     # 运行期数据（对局日志/经验/分析报告）
-│   ├── game_logs/
-│   ├── experiences/
-│   └── analysis_reports/
-├── frontend/                 # Vue 前端 (Vite + Tailwind)
-│   ├── src/
-│   │   ├── components/       # UI 组件
-│   │   ├── hooks/            # 自定义 Hooks
-│   │   ├── services/         # WebSocket 服务
-│   │   ├── styles/           # 全局样式
-│   │   └── main.js           # 入口
-│   ├── index.html
-│   └── package.json
-└── README.md
-```
+- 原作者：[KeLuoJun](https://github.com/KeLuoJun)
+- 原项目：[KeLuoJun/WolfMind](https://github.com/KeLuoJun/WolfMind)
+- 二次开发与维护：[Melodyfuhua](https://github.com/Melodyfuhua)
+- 多智能体框架：[AgentScope](https://github.com/modelscope/agentscope)
 
-### 代码结构图
-
-```mermaid
-flowchart TB
-  subgraph U[用户入口]
-    CLI[命令行<br/>backend/main.py]
-    UI[Web 控制台<br/>frontend/src/App.vue]
-  end
-
-  subgraph FE[前端展示层]
-    MAIN[main.js]
-    COMP[components/<br/>Header RoomView GameFeed]
-    HOOK[hooks/useFeedProcessor.js]
-    WS[services/websocket.js<br/>ReadOnlyClient]
-    CFGFE[config/constants.js]
-  end
-
-  subgraph API[服务控制层]
-    FASTAPI[backend/api_server.py<br/>FastAPI + EventBus + WS]
-    SERVICE[backend/game_service.py<br/>run_game_session]
-    CFG[backend/config.py<br/>统一配置中心]
-  end
-
-  subgraph GAME[游戏核心层]
-    ENTRY[main.py<br/>get_official_agents]
-    ENGINE[core/game_engine.py<br/>werewolves_game]
-    ROLES[models/roles.py<br/>Werewolf Seer Witch Hunter Villager]
-    SCHEMAS[models/schemas.py<br/>结构化输出模型]
-    PROMPTS[prompts/<br/>game_prompts + role_prompts]
-    LOGGER[core/game_logger.py<br/>对局日志]
-    MEMORY[core/knowledge_base.py<br/>玩家经验库]
-    UTILS[core/utils.py<br/>投票/玩家集合/主持人辅助]
-  end
-
-  subgraph ANA[分析流水线]
-    ANALYSIS[analysis/pipeline.py<br/>run_analysis]
-    PARSER[analysis/log_parser.py<br/>日志解析]
-    AGENTS[analysis/agents.py<br/>心理/网络分析 Agent]
-    REPORT[analysis/report_template.py<br/>HTML 报告生成]
-    ASCHEMA[analysis/schemas.py<br/>报告 Schema]
-  end
-
-  subgraph DATA[运行数据]
-    LOGS[data/game_logs/*.log]
-    EXP[data/experiences/*.json]
-    HTML[data/analysis_reports/*.html]
-  end
-
-  CLI --> ENTRY
-  UI --> MAIN
-  MAIN --> COMP
-  MAIN --> HOOK
-  MAIN --> WS
-  MAIN --> CFGFE
-  WS <-- WebSocket --> FASTAPI
-  COMP -->|启动/停止/导出| FASTAPI
-
-  FASTAPI --> SERVICE
-  FASTAPI --> CFG
-  SERVICE --> ENTRY
-  SERVICE --> ENGINE
-  SERVICE --> MEMORY
-  ENTRY --> CFG
-  ENTRY --> ENGINE
-  ENTRY -. AUTO_ANALYZE .-> ANALYSIS
-
-  ENGINE --> ROLES
-  ENGINE --> SCHEMAS
-  ENGINE --> PROMPTS
-  ENGINE --> LOGGER
-  ENGINE --> MEMORY
-  ENGINE --> UTILS
-  ROLES --> SCHEMAS
-  ROLES --> PROMPTS
-
-  LOGGER --> LOGS
-  MEMORY --> EXP
-
-  ANALYSIS --> PARSER
-  ANALYSIS --> AGENTS
-  ANALYSIS --> REPORT
-  ANALYSIS --> ASCHEMA
-  PARSER --> LOGS
-  ANALYSIS --> EXP
-  REPORT --> HTML
-```
-
----
-
-## 对局日志与分析
-
-### 对局日志
-
-- 日志目录：`data/game_logs/`（默认 `game_<timestamp>.log`）
-- 经验存档：`data/experiences/players_experience_<timestamp>.json`
-- 终止保护：即便通过控制台“停止游戏”强制结束进程，也会在最新日志尾部追加收口块（结束时间、异常终止标记等），避免日志缺尾
-
-### 自动分析
-
-将 `.env` 中 `AUTO_ANALYZE=true`，游戏结束后会自动生成 HTML 报告到 `data/analysis_reports/`。
-
-### 手动分析（CLI）
-
-```bash
-uv run python -m backend.analysis \
-  --log data/game_logs/game_xxxx.log \
-  --experience data/experiences/players_experience_xxxx.json
-```
-
-参数：
-
-- `--log`：必填，游戏日志文件路径
-- `--experience`：可选，玩家经验文件路径
-- `--out`：可选，输出 HTML 路径（默认 `data/analysis_reports/report_<timestamp>.html`）
-
-### 对局示例文件
-
-对局示例文件位于 `static/`：
-
-- [完整对局日志（GLM-4.6）](static/game_20251210_150049_glm-4.6.log)
-- [完整对局经验存档（GLM-4.6）](static/players_experience_20251210_150049_glm-4.6.json)
-- [示例分析报告](data/analysis_reports/report_demo.html)
-
----
-
-## 游戏规则
-
-### 角色（9 人）
-
-- 狼人（3）：夜晚选择击杀目标，白天隐藏身份误导
-- 村民（3）：通过讨论与投票找出狼人
-- 预言家（1）：夜晚查验一名玩家身份
-- 女巫（1）：解药（救人）与毒药（杀人）各一次（同夜不可双药）
-- 猎人（1）：被淘汰时可开枪带走一人
-
-### 流程概要
-
-1. 夜晚：狼人投票击杀 → 女巫用药（可选） → 预言家查验 →（猎人若被刀，可立即开枪）
-2. 白天：公布死亡 → 依次发言 → 公开投票 → 平票最多 3 轮 PK（再平票按姓名顺位淘汰） →（猎人若被投出，可开枪）
-3. 胜负：清空狼队则好人胜；若神职或平民一侧被清空，或狼人数量达到存活人数一半，则狼人胜
-
----
-
-## 技术栈
-
-- **多智能体框架**：[AgentScope](https://github.com/modelscope/agentscope)
-- **大语言模型**：DashScope / OpenAI / Ollama
-- **环境管理**：[uv](https://github.com/astral-sh/uv)
-- **编程语言**：Python 3.8+
-- **后端框架**：FastAPI
-- **前端框架**：Vue 3 + Vite + Tailwind CSS
-- **数据验证**：Pydantic
-- **异步编程**：asyncio
-
-
----
-
-<div align="center">
-
-**如果这个项目对你有帮助，请给个 ⭐️ Star 支持一下！**
-
-</div>
+本仓库保留原项目的 [MIT 许可证及版权声明](LICENSE)。请在使用、复制和分发时保留相应声明。
