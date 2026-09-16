@@ -1,0 +1,61 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="WolfMind-Architecture" id="wolfmind-arch">
+    <mxGraphModel dx="1000" dy="760" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="lay1" value="前端展示层" style="swimlane;startSize=34;rounded=1;arcSize=3;align=left;spacingLeft=16;fillColor=#4C7FE0;strokeColor=#4C7FE0;fontColor=#FFFFFF;fontSize=14;fontStyle=1;swimlaneFillColor=#EEF4FE;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="920" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="lay2" value="服务控制层" style="swimlane;startSize=34;rounded=1;arcSize=3;align=left;spacingLeft=16;fillColor=#2F9E5E;strokeColor=#2F9E5E;fontColor=#FFFFFF;fontSize=14;fontStyle=1;swimlaneFillColor=#EDF8F1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="920" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="lay3" value="游戏核心层" style="swimlane;startSize=34;rounded=1;arcSize=3;align=left;spacingLeft=16;fillColor=#DD7A2E;strokeColor=#DD7A2E;fontColor=#FFFFFF;fontSize=14;fontStyle=1;swimlaneFillColor=#FEF6EE;" vertex="1" parent="1">
+          <mxGeometry x="40" y="320" width="920" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="lay4" value="分析流水线" style="swimlane;startSize=34;rounded=1;arcSize=3;align=left;spacingLeft=16;fillColor=#8B5CF6;strokeColor=#8B5CF6;fontColor=#FFFFFF;fontSize=14;fontStyle=1;swimlaneFillColor=#F6F1FE;" vertex="1" parent="1">
+          <mxGeometry x="40" y="540" width="920" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="fe" value="Web 控制台&#10;实时可视化 · 真人交互" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#D6E4FB;strokeColor=#4C7FE0;fontColor=#1A365D;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="78" width="360" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="svc" value="FastAPI 服务&#10;会话管理 · 事件总线 · WebSocket" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#D3F0DF;strokeColor=#2F9E5E;fontColor=#1A4731;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="218" width="520" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="human" value="HumanAgent&#10;+ 视角过滤" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="372" width="240" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="engine" value="game_engine 引擎&#10;状态机 · 投票判定 · 经验 / 日志" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="372" width="240" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="roles" value="角色与结构化决策&#10;三段式：心声 · 表现 · 发言" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="680" y="372" width="240" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="ana" value="分析流水线&#10;心理 · 社交网络 → HTML 报告" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#E6D6FB;strokeColor=#8B5CF6;fontColor=#3C1A66;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="578" width="520" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="model" value="模型供应商&#10;DashScope&#10;OpenAI / Ollama" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;shadow=1;fillColor=#2D3748;strokeColor=#1A202C;fontColor=#FFFFFF;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="990" y="372" width="150" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="WebSocket" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;startArrow=classic;strokeColor=#4C7FE0;fontColor=#1A365D;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="fe" target="svc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="启动 / 推送" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#5A6C7D;fontColor=#33424E;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="svc" target="engine">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#DD7A2E;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="engine" target="human">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#DD7A2E;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="engine" target="roles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="模型调用" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=10;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="roles" target="model">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="对局结束分析" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;strokeColor=#8B5CF6;fontColor=#3C1A66;fontSize=10;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="engine" target="ana">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

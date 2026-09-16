@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="WolfMind-Modules" id="wolfmind-modules">
+    <mxGraphModel dx="1000" dy="760" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="g_engine" value="引擎 core" style="swimlane;startSize=30;rounded=1;arcSize=3;align=left;spacingLeft=14;fillColor=#DD7A2E;strokeColor=#DD7A2E;fontColor=#FFFFFF;fontSize=13;fontStyle=1;swimlaneFillColor=#FEF6EE;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="240" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_role" value="角色 roles" style="swimlane;startSize=30;rounded=1;arcSize=3;align=left;spacingLeft=14;fillColor=#E0992E;strokeColor=#E0992E;fontColor=#FFFFFF;fontSize=13;fontStyle=1;swimlaneFillColor=#FDF7EC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="80" width="230" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_player" value="玩家接入" style="swimlane;startSize=30;rounded=1;arcSize=3;align=left;spacingLeft=14;fillColor=#4C7FE0;strokeColor=#4C7FE0;fontColor=#FFFFFF;fontSize=13;fontStyle=1;swimlaneFillColor=#EEF4FE;" vertex="1" parent="1">
+          <mxGeometry x="630" y="80" width="250" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="g_data" value="数据与分析" style="swimlane;startSize=30;rounded=1;arcSize=3;align=left;spacingLeft=14;fillColor=#8B5CF6;strokeColor=#8B5CF6;fontColor=#FFFFFF;fontSize=13;fontStyle=1;swimlaneFillColor=#F6F1FE;" vertex="1" parent="1">
+          <mxGeometry x="340" y="430" width="540" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" value="回合状态机&#10;夜晚 / 白天 / 胜负判定" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="58" y="124" width="204" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" value="投票与 PK 仲裁" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="58" y="182" width="204" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="E3" value="上下文构建器&#10;印象 + 经验 + 票型" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="58" y="232" width="204" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="E4" value="信息隔离&#10;心声剥离 / 狼频道隔离" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE0C7;strokeColor=#DD7A2E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="58" y="290" width="204" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="R1" value="狼人" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE6CC;strokeColor=#E0992E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="358" y="124" width="92" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="R2" value="预言家" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE6CC;strokeColor=#E0992E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="460" y="124" width="92" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="R3" value="女巫" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE6CC;strokeColor=#E0992E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="358" y="172" width="92" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="R4" value="猎人" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE6CC;strokeColor=#E0992E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="460" y="172" width="92" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="R5" value="村民" style="rounded=1;arcSize=14;whiteSpace=wrap;html=1;shadow=1;fillColor=#FBE6CC;strokeColor=#E0992E;fontColor=#5A3210;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="358" y="220" width="92" height="38" as="geometry" />
+        </mxCell>
+        <mxCell id="R6" value="三段式决策&#10;心声 · 表现 · 发言" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#F6D9B5;strokeColor=#E0992E;fontColor=#5A3210;fontSize=11;fontStyle=2;" vertex="1" parent="1">
+          <mxGeometry x="358" y="282" width="194" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="P1" value="AI：ReActAgent" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#D6E4FB;strokeColor=#4C7FE0;fontColor=#1A365D;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="124" width="210" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="P2" value="真人：HumanAgent" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#D6E4FB;strokeColor=#4C7FE0;fontColor=#1A365D;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="178" width="210" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="P3" value="视角过滤 perspective" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#D6E4FB;strokeColor=#4C7FE0;fontColor=#1A365D;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="232" width="210" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="P4" value="输入通道 Channel" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#D6E4FB;strokeColor=#4C7FE0;fontColor=#1A365D;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="650" y="286" width="210" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="D1" value="经验库 KnowledgeStore" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#E6D6FB;strokeColor=#8B5CF6;fontColor=#3C1A66;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="360" y="476" width="230" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="D2" value="对局日志" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#E6D6FB;strokeColor=#8B5CF6;fontColor=#3C1A66;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="360" y="528" width="230" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="D3" value="心理分析" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#E6D6FB;strokeColor=#8B5CF6;fontColor=#3C1A66;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="476" width="230" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="D4" value="社交网络分析" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;shadow=1;fillColor=#E6D6FB;strokeColor=#8B5CF6;fontColor=#3C1A66;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="528" width="230" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="驱动" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B45309;fontColor=#5A3210;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="g_engine" target="g_role">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" value="统一接口" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#B45309;fontColor=#5A3210;fontSize=11;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="g_role" target="g_player">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" value="落盘 / 复盘" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#7C3AED;fontColor=#3C1A66;fontSize=11;exitX=0.5;exitY=1;entryX=0.05;entryY=0;" edge="1" parent="1" source="g_engine" target="g_data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
