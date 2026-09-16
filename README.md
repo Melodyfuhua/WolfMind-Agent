@@ -1,6 +1,6 @@
 # WolfMind-Agent：支持真人参与的多智能体狼人杀
 
-基于 AgentScope 的 9 人狼人杀系统，支持 **9 个 AI 自动博弈** 与 **8 个 AI + 1 位真人同场对战**。通过 Web 界面观察发言、投票和角色行动，也可以亲自加入对局，用文字或语音转写参与讨论。
+基于 AgentScope 的 9 人狼人杀系统，支持 **9 个 AI 自动博弈** 与 **8 个 AI + 1 位真人同场对战**。通过 Web 界面观察发言、投票和角色行动，也可以亲自加入对局，用文字或语音转写参与讨论。当然，该项目的扩展是vibe coding出来的，后续主播还会在此基础上加上白狼王等角色更丰富一些，声明：没有用于商业用途，
 
 > 本项目由 [Melodyfuhua](https://github.com/Melodyfuhua) 基于原作者 [KeLuoJun](https://github.com/KeLuoJun) 的 [WolfMind](https://github.com/KeLuoJun/WolfMind) 二次开发。原项目提供了多智能体狼人杀引擎、角色逻辑、日志与分析等基础能力；本仓库在此基础上扩展真人参与、真人视角过滤及交互体验。感谢原作者的开源工作，原始版权声明保留在 [LICENSE](LICENSE) 中。
 
